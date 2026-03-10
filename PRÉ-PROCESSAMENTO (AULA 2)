@@ -1,0 +1,29 @@
+Nesta aula criamos e selecionamos PYTHON,bom que o aprendizado é melhor.
+
+PRÉ-PROCESSAMENTO:
+A tendencia em trabalhar com IA é maior, por isso a vetorizaçao é muiot necessaria.
+Os probelmas encontrados é a vetorização com tokens, pois eles não casam;
+é uma base de normalização/transformação de dados numéricos, e somente numéricos, que sao obrigatórios passarem por este préprocessamento;
+
+Em imagens, é aplicado um filtro, seja lá qual seja, além dos pré processamentos usados, é muito usado em sons.
+
+Todo dado não é confiavel, ele é como um bandido, precisa-se que interroge-o até ele falar as informações que precisamos.
+A qualidade do dado define se a IA é boa ou ruim.
+
+Dados escalares são os numéricos, ex: idade, temperatura;
+
+SENSIBILIDADE À ESCALA:
+Escalas comparáveis, toda ia é sensível a ela, ela perturba o resultado.
+O ideal é que todos estejam na mesma escala, na mesma "Média".
+A escala maior, é o que dificulta o processamento, pois um padrão se torna difícil se o máximo for muito acima da média.
+
+Min-Max Scaler: Sensível a valores anônimos, que é:
+  Sensível a valores anônimos;
+  Data-Leakage: ao usar o 70/30 para treinamento da IA, vc tem sobreposição quando um dado 10 de treinamento, não equivale ao 10 de teste;
+
+Quando o dado tem ordem posso usar o label encoding, aonde posso usar a categoria escalar, ex: 1, 2, 3 (aplicar min-max);
+
+EXERCÍCIO MIN-MAX SCALER;
+
+
+
