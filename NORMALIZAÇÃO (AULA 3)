@@ -1,0 +1,8 @@
+Criar não-supervisionado é a forma de ser um ótimo programador de sistemas inteligentes.
+
+Label encoder, usado para dados categóricos;
+Se o seu atributo for categórico e ordinal, label encoder, e após ele, números podem dar 2, use Min Max Scaler;
+Em dados categórios o domínio é fixo;
+
+Pandas é a principal para manipulação de dados, e sklearn também
+ 
