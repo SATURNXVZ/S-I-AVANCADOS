@@ -64,7 +64,43 @@ for i in K:
                     dadosNorm, clusterIris.cluster_centers_, 
                     'euclidean'), axis=1)/dadosNorm.shape[0]
             )
+    ) 
+    
+#print(distorcoes);  
+#plotar grafico de distorcoes
+
+
+    '''
+    fig, ax = plt.subplots()
+    ax.plot(K, distorcoes)
+    ax.set(xlabel = 'n Clusters', ylabel = "Distorções")
+    ax.grid()
+    plt.show()
+    '''
+
+#Determinar o numero otimo de clusters
+x0 = K[0]
+y0 = distorcoes[0]
+xn = K[-1]
+yn = distorcoes[-1]
+distancias = []
+
+for i in range(len(distorcoes)):
+    x = K[i]
+    y = distorcoes[i]
+    cont = abs(
+        (yn-y0)*x - (xn - x0) * y + xn * y0 - yn * x0
     )
+    denominador = math.sqrt(
+        (yn - y0)**2 + (xn - x0)**2
+    )
+    distancias.append(cont/denominador)
     
-print(distorcoes);  
-    
+clusterMax = K[distancias.index(np.max(distancias))]
+print("Numero otimo de clusters: ", clusterMax)
+
+
+#treinar e salvar modelo de cluster
+clusterIris= KMeans(n_clusters=clusterMax, random_state=42).fit(dadosNorm)
+
+pk.dump(clusterIris, open('clusterIris.pkl', 'wb'))
