@@ -1,12 +1,16 @@
 import pandas as pd
-from sklearn.cluster import KMeans #
+from sklearn.cluster import KMeans #metaestimador
 from sklearn.preprocessing import MinMaxScaler
+from scipy.spatial.distance import cdist
 import numpy as np
 import pickle as pk
+import matplotlib.pyplot as plt
+import math 
+
 
 #abrir csv
 
-dados = pd.read_csv('CLUSTER\iris.csv', sep=';')
+dados = pd.read_csv('NORMALIZAÇÃO\CLUSTER\iris.csv', sep=';')
 
 #print(dados)
 
@@ -41,4 +45,26 @@ numNorm = pd.DataFrame(numNorm, columns = num.columns)
 #recriar dataFrame com todos os dados
 dadosNorm = numNorm.join(catNorm, how='left')
 
-print(dadosNorm.head(10))
+#print(dadosNorm.head(10))
+
+#hiperparametro antes de treinar
+distorcoes = []
+
+K = range(1, 101)
+
+#treinando iterativamente, aumentando o numero de clusters
+for i in K:
+    clusterIris = KMeans(n_clusters=i, random_state=42).fit(dadosNorm)
+    
+    #calcular distorcao
+    distorcoes.append(
+        sum(
+            np.min(
+                cdist(
+                    dadosNorm, clusterIris.cluster_centers_, 
+                    'euclidean'), axis=1)/dadosNorm.shape[0]
+            )
+    )
+    
+print(distorcoes);  
+    
