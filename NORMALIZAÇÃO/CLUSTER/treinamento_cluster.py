@@ -41,7 +41,7 @@ print(num.columns)
 
 #transformar o numNorm em dataFrame
 numNorm = pd.DataFrame(numNorm, columns = num.columns)
-
+ 
 #recriar dataFrame com todos os dados
 dadosNorm = numNorm.join(catNorm, how='left')
 
@@ -95,7 +95,7 @@ for i in range(len(distorcoes)):
         (yn - y0)**2 + (xn - x0)**2
     )
     distancias.append(cont/denominador)
-    
+     
 clusterMax = K[distancias.index(np.max(distancias))]
 print("Numero otimo de clusters: ", clusterMax)
 
@@ -103,4 +103,8 @@ print("Numero otimo de clusters: ", clusterMax)
 #treinar e salvar modelo de cluster
 clusterIris= KMeans(n_clusters=clusterMax, random_state=42).fit(dadosNorm)
 
+print(dadosNorm.columns)
+
 pk.dump(clusterIris, open('clusterIris.pkl', 'wb'))
+
+
