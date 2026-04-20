@@ -1,0 +1,11 @@
+id,nome,idade,salario,cidade,cor,status
+1,Ana,25,3000,São Paulo,Azul,ativo
+2,Bruno,30,5000,Rio de Janeiro,Verde,inativo
+3,Carla,35,7000,Belo Horizonte,Vermelho,ativo
+4,Daniel,40,9000,São Paulo,Azul,ativo
+5,Eduarda,28,4500,Curitiba,Verde,inativo
+6,Felipe,32,6000,Porto Alegre,Amarelo,ativo
+7,Gabriela,38,8000,Salvador,Roxo,inativo
+8,Henrique,45,11000,Fortaleza,Azul,ativo
+9,Isabela,26,3500,Recife,Verde,ativo
+10,João,33,5500,Brasília,Vermelho,inativo
