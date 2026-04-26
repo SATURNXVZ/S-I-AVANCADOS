@@ -44,7 +44,7 @@ class OneHotEncoderProcessor:
     def fit_transform(self, df, column_name):
         self.fit(df, column_name)
         return self.transform(df)
-    
+     
     #salva o encoder (pkl)
     def save(self, filepath):
         with open(filepath, 'wb') as f:

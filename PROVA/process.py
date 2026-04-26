@@ -9,10 +9,26 @@ from onehot import OneHotEncoderProcessor
 from minmaxscaler import MinMaxScalerProcessor
 from label import LabelEncoderProcessor
 
+#trata valores nulos (NA) no dataframe
+def tratar_nulos(df):
+        if df.isnull().sum().sum() == 0:
+            print("Nenhum valor nulo detectado")
+            return df
+        
+        print("\nValores nulos detectados:")
+        print(df.isnull().sum())
+        
+        #remove linhas com nulos
+        df_limpo = df.dropna()
+        
+        print(f"Linhas removidas: {len(df) - len(df_limpo)}")
+        print(f"Linhas restantes: {len(df_limpo)}")
+        
+        return df_limpo
 
 class ProcessadorDadosCompleto:
     def __init__(self):
-        self.one_hot_encoder = OneHotEncoderProcessor()
+        self.one_hot_encoders = {}  #por coluna, evita sobrescrever o estado
         self.label_encoder = LabelEncoderProcessor()
         self.scaler = MinMaxScalerProcessor()
         self.processed_columns = {}
@@ -47,7 +63,6 @@ class ProcessadorDadosCompleto:
     
     #aplica onehot nas colunas identificadas antes
     def aplicar_one_hot_encoding(self, df):
-        """Transforma categorias em colunas binárias (0/1)"""
         if not self.one_hot_columns:
             return df
         
@@ -55,8 +70,10 @@ class ProcessadorDadosCompleto:
         
         for col in self.one_hot_columns:
             if col in df_resultado.columns:
-                print(f"  One-Hot: {col} → {df[col].nunique()} categorias")
-                encoded_data = self.one_hot_encoder.fit_transform(df_resultado, col)
+                print(f"One-Hot: {col} → {df[col].nunique()} categorias")
+                enc = OneHotEncoderProcessor()          #encoder independente por coluna
+                self.one_hot_encoders[col] = enc
+                encoded_data = enc.fit_transform(df_resultado, col)
                 df_resultado = df_resultado.drop(col, axis=1)
                 df_resultado = pd.concat([df_resultado, encoded_data], axis=1)
         
@@ -77,12 +94,12 @@ class ProcessadorDadosCompleto:
             return df
         
         print(f"  Scaler: {self.numeric_columns}")
-        df_resultado = self.scaler.fit_transform(df)
+        colunas_para_escalar = [c for c in self.numeric_columns if c in df.columns]  #só numéricas originais
+        df_resultado = self.scaler.fit_transform(df, columns=colunas_para_escalar)
         return df_resultado
     
     #processa df completo com as informações "normalizadas"
     def processar_completo(self, df):
-        """Executa todo o pipeline de pré-processamento"""
         print("="*60)
         print("INICIANDO PROCESSAMENTO")
         print("="*60)
@@ -97,7 +114,6 @@ class ProcessadorDadosCompleto:
         print(f"  One-Hot (≤10 cat): {len(tipos['one_hot'])}")
         print(f"  Label (>10 cat): {len(tipos['label'])}")
         
-        print(f"\n APLICANDO TRANSFORMAÇÕES:")
         df_processado = df.copy()
         
         df_processado = self.aplicar_one_hot_encoding(df_processado)
@@ -114,7 +130,8 @@ class ProcessadorDadosCompleto:
     #salva os pkls treinados
     def salvar_processadores(self, caminho_base):
         os.makedirs(caminho_base, exist_ok=True)
-        self.one_hot_encoder.save(f"{caminho_base}/one_hot_encoder.pkl")
+        for col, enc in self.one_hot_encoders.items():  #salva cada encoder
+            enc.save(f"{caminho_base}/one_hot_encoder_{col}.pkl")
         self.label_encoder.save(f"{caminho_base}/label_encoder.pkl")
         self.scaler.save(f"{caminho_base}/min_max_scaler.pkl")
         print(f"\nProcessadores salvos em: {caminho_base}")
@@ -126,8 +143,7 @@ def main():
     print("="*60)
     
     #caminho da base de dados
-    #AJUSTAR ANTES!!!
-    caminho_arquivo = r"C:\Users\Pichau\Downloads\dados_normalizar.csv"
+    caminho_arquivo = r"C:\Users\Pichau\OneDrive\Documentos\Code\S-I-AVANCADOS\PROVA\dados_normalizar.csv"
     
     #ler arquivo CSV
     print("\nCarregando arquivo...")
@@ -139,6 +155,7 @@ def main():
     print(df_original.head())
     
     #processar
+    df_original = tratar_nulos(df_original)
     processador = ProcessadorDadosCompleto()
     df_processado = processador.processar_completo(df_original)
     
