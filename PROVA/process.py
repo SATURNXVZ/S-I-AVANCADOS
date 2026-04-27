@@ -143,7 +143,7 @@ def main():
     print("="*60)
     
     #caminho da base de dados
-    caminho_arquivo = r"C:\Users\Pichau\OneDrive\Documentos\Code\S-I-AVANCADOS\PROVA\dados_normalizar.csv"
+    caminho_arquivo = r"C:\Users\VITORHENRIQUEDEMELO\Documents\S-I-AVANCADOS\PROVA\dados_normalizar.csv"
     
     #ler arquivo CSV
     print("\nCarregando arquivo...")

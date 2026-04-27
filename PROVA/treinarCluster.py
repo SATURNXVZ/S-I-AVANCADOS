@@ -7,9 +7,12 @@ import math
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 
-caminho_dados = r"C:\Users\Pichau\OneDrive\Documentos\Code\S-I-AVANCADOS\PROVA\dados_normalizar_processado.csv"
-COLUNAS_REMOVER = [""]  #remova colunas muito espeficias, deixe vazio se não quiser remover nada
-MAX_K = 5 #numero máximo de clusters para testar, adiicone menos para base de dados menor
+caminho_dados = r"C:\Users\VITORHENRIQUEDEMELO\Documents\S-I-AVANCADOS\PROVA\dados_normalizar_processado.csv"
+COLUNAS_REMOVER = ['NObeyesdad_Insufficient_Weight', 'NObeyesdad_Normal_Weight', 
+                   'NObeyesdad_Obesity_Type_I', 'NObeyesdad_Obesity_Type_II',
+                   'NObeyesdad_Obesity_Type_III', 'NObeyesdad_Overweight_Level_I',
+                   'NObeyesdad_Overweight_Level_II'] #remova colunas muito espeficias, deixe vazio se não quiser remover nada
+MAX_K = 20 #numero máximo de clusters para testar, adiicone menos para base de dados menor
 NOME_MODELO = "modelo_kmeans.pkl"
 
 #melhor numero de cluster usando cotovelo

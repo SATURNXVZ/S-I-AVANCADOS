@@ -9,6 +9,12 @@ def main():
     print("ANÁLISE DOS CLUSTERS")
     print("="*60)
     
+    COLUNAS_REMOVER = ['NObeyesdad_Insufficient_Weight', 'NObeyesdad_Normal_Weight', 
+                   'NObeyesdad_Obesity_Type_I', 'NObeyesdad_Obesity_Type_II',
+                   'NObeyesdad_Obesity_Type_III', 'NObeyesdad_Overweight_Level_I',
+                   'NObeyesdad_Overweight_Level_II']
+
+    
     #carregar modelo KMeans
     nome_modelo = "modelo_kmeans.pkl"
     
@@ -24,9 +30,10 @@ def main():
     dados_processados = None
     
     #carrega csv normalizado (ALTERAR)
-    caminho_proc = r"C:\Users\Pichau\OneDrive\Documentos\Code\S-I-AVANCADOS\PROVA\dados_normalizar_processado.csv"
+    caminho_proc = r"C:\Users\VITORHENRIQUEDEMELO\Documents\S-I-AVANCADOS\PROVA\dados_normalizar_processado.csv"
     if os.path.exists(caminho_proc):
             dados_processados = pd.read_csv(caminho_proc)
+            dados_processados = dados_processados.drop(columns=[c for c in COLUNAS_REMOVER if c in dados_processados.columns])
             print(f"Dados carregados: {dados_processados.shape}")
     else:
         print(f"ERRO! Arquivo não encontrado: {caminho_proc}")
@@ -38,7 +45,7 @@ def main():
     
     #carregar normalizador e desnormalizar automaticamente
     from minmaxscaler import MinMaxScalerProcessor
-    caminho_scaler = r"C:\Users\Pichau\OneDrive\Documentos\Code\S-I-AVANCADOS\PROVA\processadores\min_max_scaler.pkl"
+    caminho_scaler = r"C:\Users\VITORHENRIQUEDEMELO\Documents\S-I-AVANCADOS\PROVA\processadores\min_max_scaler.pkl"
     
     if os.path.exists(caminho_scaler):
         scaler = MinMaxScalerProcessor.load(caminho_scaler)
@@ -46,7 +53,7 @@ def main():
         
         if hasattr(scaler, 'column_names') and scaler.column_names:
             colunas_scaler = scaler.column_names
-            print(f"  📋 Colunas do normalizador: {colunas_scaler}")
+            print(f"Colunas do normalizador: {colunas_scaler}")
             
             num_colunas = min(len(colunas_scaler), centroides_norm.shape[1])
             colunas_para_usar = colunas_scaler[:num_colunas]

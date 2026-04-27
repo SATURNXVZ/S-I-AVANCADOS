@@ -3,47 +3,79 @@ import pandas as pd
 import numpy as np
 import os
 
+from minmaxscaler import MinMaxScalerProcessor
+from onehot import OneHotEncoderProcessor
 
-CAMINHO_MODELO = "modelo_kmeans.pkl"
-CAMINHO_COLUNAS = "colunas_cluster.pkl"  #precisa salvar no treino
+CAMINHO_MODELO     = r"C:\Users\VITORHENRIQUEDEMELO\Documents\S-I-AVANCADOS\PROVA\modelo_kmeans.pkl"
+CAMINHO_COLUNAS    = r"C:\Users\VITORHENRIQUEDEMELO\Documents\S-I-AVANCADOS\PROVA\colunas_cluster.pkl"
+PASTA_PROCESSADORES = r"C:\Users\VITORHENRIQUEDEMELO\Documents\S-I-AVANCADOS\PROVA\processadores"
 
 
-#verifica se o modelo existe
-if not os.path.exists(CAMINHO_MODELO):
-    print(f"\nERRO! Modelo não encontrado: {CAMINHO_MODELO}")
-    exit()
+#DADOS DE NOVA INFERENCIA
+nova_instancia = pd.DataFrame([[
+    'Female',       # Gender
+    25,             # Age
+    1.65,           # Height
+    70,             # Weight
+    'yes',          # family_history_with_overweight
+    'yes',          # FAVC
+    2.0,            # FCVC
+    3.0,            # NCP
+    'Sometimes',    # CAEC
+    'no',           # SMOKE
+    2.0,            # CH2O
+    'no',           # SCC
+    1.0,            # FAF
+    1.0,            # TUE
+    'no',           # CALC
+    'Public_Transportation'  # MTRANS
+]], columns=[
+    'Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight',
+    'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF',
+    'TUE', 'CALC', 'MTRANS'
+])
 
-#carregar modelo
-print(f"📂 Carregando modelo: {CAMINHO_MODELO}")
+print(f"Carregando modelo: {CAMINHO_MODELO}")
 with open(CAMINHO_MODELO, 'rb') as f:
     kmeans = pickle.load(f)
-print(f" Modelo carregado, Clusters: {kmeans.n_clusters}")
+print(f"  Modelo carregado, Clusters: {kmeans.n_clusters}")
 
-#carregar colunas do treino
-if os.path.exists(CAMINHO_COLUNAS):
-    with open(CAMINHO_COLUNAS, 'rb') as f:
-        colunas = pickle.load(f)
-    print(f"Colunas carregadas: {len(colunas)} features")
-else:
-    print(f" ERRO! Arquivo de colunas não encontrado: {CAMINHO_COLUNAS}")
-    print(f" ERRRO! O modelo espera {kmeans.n_features_in_} features")
-    print(f"ERRO! Execute o treinamento novamente para salvar as colunas")
-    exit()
+with open(CAMINHO_COLUNAS, 'rb') as f:
+    colunas = pickle.load(f)
+print(f"  Colunas carregadas: {len(colunas)} features")
 
-#criar nova instância com ZERO em todas as colunas
-nova_instancia = pd.DataFrame(0, index=[0], columns=colunas)
+#carregar processadores
+scaler = MinMaxScalerProcessor.load(f"{PASTA_PROCESSADORES}/min_max_scaler.pkl")
 
-"""
-VALORES DA SUA NOVA INSTANCIA
-exemplo com valores normalizados (0 e 1)
+colunas_onehot = [
+    'Gender', 'family_history_with_overweight', 'FAVC',
+    'CAEC', 'SMOKE', 'SCC', 'CALC', 'MTRANS'
+]
 
-nova_instancia[''] = 0
-============================================================
+#aplicar onehot nas colunas categoricas
+df = nova_instancia.copy()
+for col in colunas_onehot:
+    if col in df.columns:
+        enc = OneHotEncoderProcessor.load(f"{PASTA_PROCESSADORES}/one_hot_encoder_{col}.pkl")
+        encoded = enc.transform(df)
+        df = df.drop(col, axis=1)
+        df = pd.concat([df, encoded], axis=1)
 
-print(f"\nNova instancia preparada:")
-print(nova_instancia)
-"""
+#aplicar MinMax nas colunas numericas
+colunas_num = scaler.column_names
+df[colunas_num] = scaler.scaler.transform(df[colunas_num])
+
+#alinhar colunas com o modelo (ordem e colunas ausentes)
+for col in colunas:
+    if col not in df.columns:
+        df[col] = 0
+df = df[colunas]
+
+print(f"\nNova instância preparada:")
+print(df)
+
+#print(df.to_string()) testes.
 
 #predizer cluster
-cluster = kmeans.predict(nova_instancia)
-print(f'\ncluster previsto: {cluster[0]}')
+cluster = kmeans.predict(df.values)
+print(f'\nCluster previsto: {cluster[0]}')
