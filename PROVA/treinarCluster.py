@@ -60,7 +60,7 @@ def main():
     dados = pd.read_csv(caminho_dados)
     print(f"  {dados.shape[0]} linhas x {dados.shape[1]} colunas")
     
-    print(f"\nColunas disponíveis: {dados.columns.tolist()}")
+    print(f"\nColunas disponiveis: {dados.columns.tolist()}")
     
     #remover colunas configuradas
     if COLUNAS_REMOVER:
@@ -95,13 +95,13 @@ def main():
     print("="*60)
     
     labels = kmeans.labels_
-    print("\n📊 Distribuição dos clusters:")
+    print("\nDistribuição dos clusters:")
     for i in range(k_otimo):
         count = np.sum(labels == i)
         print(f"  Cluster {i}: {count} pontos ({count/len(labels)*100:.1f}%)")
     
-    print(f"\n  Inércia total: {kmeans.inertia_:.2f}")
-    print(f"    Número de iterações: {kmeans.n_iter_}")
+    print(f"\n  Inercia total: {kmeans.inertia_:.2f}")
+    print(f"    Numero de iteracoes: {kmeans.n_iter_}")
     
     print("\n   TREINAMENTO FINALIZADO!")
 

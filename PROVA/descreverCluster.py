@@ -75,14 +75,14 @@ def main():
                 except Exception as e2:
                     print(f"ERRO! Também falhou: {e2}")
         else:
-            print("\nNormalizador não tem nomes de colunas")
+            print("\nNormalizador nao tem nomes de colunas")
     else:
         print(f"ERRO! Normalizador não encontrado: {caminho_scaler}")
     
     #informações gerais
-    print("\n📊 INFORMAÇÕES DOS CLUSTERS:")
+    print("\nINFORMAÇÕES DOS CLUSTERS:")
     print(f"  Número de clusters: {kmeans.n_clusters}")
-    print(f"  Inércia: {kmeans.inertia_:.2f}")
+    print(f"  Inércia: {kmeans.inertia_:.2f}") #.2f pára 2 casa decimais após virgula
     
     if hasattr(kmeans, 'n_iter_'):
         print(f"  Iterações: {kmeans.n_iter_}")
@@ -90,7 +90,7 @@ def main():
     #mostrar distribuição (se tiver os dados)
     if dados_processados is not None:
         labels = kmeans.predict(dados_processados)
-        print("\n📊 DISTRIBUIÇÃO DOS CLUSTERS:")
+        print("\nDISTRIBUICAO DOS CLUSTERS:")
         for i in range(kmeans.n_clusters):
             count = np.sum(labels == i)
             print(f"  Cluster {i}: {count} pontos ({count/len(labels)*100:.1f}%)")

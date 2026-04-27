@@ -26,7 +26,7 @@ class OneHotEncoderProcessor:
     #transforma os dados aplicando one-hot encoding, recebe o dataframe e devolve as nova colunas codificadas
     def transform(self, df):
         if self.encoder is None or self.column_name is None:
-            raise ValueError("Encoder não foi ajustado. Chame fit primeiro.")
+            raise ValueError("Encoder não foi ajustado. Chame fit primeiro")
         
         data = df[[self.column_name]]
         encoded_data = self.encoder.transform(data)

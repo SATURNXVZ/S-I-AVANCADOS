@@ -151,7 +151,7 @@ def main():
     print(f"  {df_original.shape[0]} linhas x {df_original.shape[1]} colunas")
     
     #mostrar amostra
-    print("\n📋 AMOSTRA DOS DADOS ORIGINAIS:")
+    print("\nAMOSTRA DOS DADOS ORIGINAIS:")
     print(df_original.head())
     
     #processar
@@ -160,13 +160,12 @@ def main():
     df_processado = processador.processar_completo(df_original)
     
     #mostrar resultado
-    print("\n📋 AMOSTRA DOS DADOS PROCESSADOS:")
+    print("\nAMOSTRA DOS DADOS PROCESSADOS:")
     print(df_processado.head())
     
     #salvar
     caminho_saida = caminho_arquivo.replace('.csv', '_processado.csv')
     df_processado.to_csv(caminho_saida, index=False)
-    print(f"\n💾 Dados salvos em: {caminho_saida}")
     
     #salvar processadores
     caminho_processadores = "PROVA/processadores"
