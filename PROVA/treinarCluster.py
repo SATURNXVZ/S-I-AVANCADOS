@@ -11,7 +11,6 @@ caminho_dados = r"C:\Users\Pichau\OneDrive\Documentos\Code\S-I-AVANCADOS\PROVA\d
 COLUNAS_REMOVER = [""]  #remova colunas muito espeficias, deixe vazio se não quiser remover nada
 MAX_K = 5 #numero máximo de clusters para testar, adiicone menos para base de dados menor
 NOME_MODELO = "modelo_kmeans.pkl"
-# ============================================================
 
 #melhor numero de cluster usando cotovelo
 def encontrar_melhor_k(dados, max_k=20):
