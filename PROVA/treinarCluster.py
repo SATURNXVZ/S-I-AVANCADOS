@@ -7,9 +7,6 @@ import math
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 
-# ============================================================
-# CONFIGURAÇÕES (você ajusta aqui antes de rodar)
-# ============================================================
 caminho_dados = r"C:\Users\Pichau\OneDrive\Documentos\Code\S-I-AVANCADOS\PROVA\dados_normalizar_processado.csv"
 COLUNAS_REMOVER = [""]  #remova colunas muito espeficias, deixe vazio se não quiser remover nada
 MAX_K = 5 #numero máximo de clusters para testar, adiicone menos para base de dados menor
