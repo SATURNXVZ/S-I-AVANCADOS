@@ -10,7 +10,7 @@ from imblearn.over_sampling import SMOTE
 
 
 
-dados =pd.read_csv("fertility_Diagnosis.bolnho")
+dados =pd.read_csv("CLASSIFICADORES (AULA 9)/fertility_Diagnosis.bolnho")
 
 #separar atributos e classes
 dadosAtributos = dados.drop(columns=['Diagnostico'])
@@ -52,6 +52,4 @@ sensibility = vp/(vp+fn)
 
 print('Especifidade: ', especify)
 print('Sensibility: ', sensibility)
-
-
 
