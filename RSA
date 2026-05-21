@@ -1,0 +1,18 @@
+Um algoritmo que vc usa a mesma senha para logar e deslogar, isso cria uma distribuição de senhas, oq pode ser ruim.
+
+O RSA usa uma chave pública para CIFRAR que qualquer um tem acesso.
+E outra privada, usada para DECIFRAR o conteúdo.
+
+O RSA usa pilares matemáticos: Fatorar números grandes.
+Ele usa o seguinte:
+  N = P x Q (com P e Q usando primos gigantes)
+  Isso torna inviável determinar e fatorar o N
+
+Ele usa o MODULO INVERTIDO:
+  y = mod(10)
+  aonde y precisa ter y % 10 == 1, ou seja, y == 11
+  
+D x E = (mod(totiente de euler(n))
+
+A chave pública precisa ser > 1 e < totiente de Euler;
+
