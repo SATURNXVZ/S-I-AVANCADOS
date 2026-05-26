@@ -34,8 +34,8 @@ tree = DecisionTreeClassifier(random_state=42)
 
 #hiperparametrização da Random Forest
 # definir os dominios para os hiperparametros
-nEstimators = [int(x) for x in np.linspace(start=10, stop=100, num=10)]
-criterion = ['gini', 'entrpy'] #log loss ainda não
+n_estimators = [int(x) for x in np.linspace(start=10, stop=100, num=10)]
+criterion = ['gini', 'entropy'] #log loss ainda não
 
 min_samples_split = [int(x) for x in np.linspace(start=2, stop=10, num=2)]
 max_depth = [int(x) for x in np.linspace(start=10, stop=100, num=20)]
@@ -44,7 +44,7 @@ max_features = ['sqrt', 'log2']
 
 #criar grade de valores
 RF_grid = {
-    'nEstimators': nEstimators,
+    'n_estimators': n_estimators,
     'criterion' : criterion,
     'min_samples_split' : min_samples_split,
     'max_depth' : max_depth,
@@ -67,16 +67,47 @@ fertilityTree = tree.fit(atributoTrain, classeTrain)
 fertilityRF = rf.fit(atributoTrain, classeTrain)
 
 from pprint import pprint
-pprint(Rf_Hyper.best_params_)
+#pprint(Rf_Hyper.best_params_)
+
+
+#TREINAMENTO DO MODELO
+#Instancia o metaestimador com os hiperparametros
+rf = RandomForestClassifier(**Rf_Hyper.best_params_)
+
+# Treinar modelo com os dados normalizados, sem o test_split
+#porque utilizaremos Cross validation
+fertilityRF = rf.fit(dadosAtributos, dadosClasses)
+
+#testar modelo com Cross Validation
+from sklearn.model_selection import cross_validate
+scoring = ['precision_macro', 'recall_macro', 'f1_macro', 'accuracy']
+score_cross = cross_validate(
+    rf, 
+    dadosAtributos,
+    dadosClasses,
+    scoring=scoring,
+    cv=10,
+    verbose=1,
+    n_jobs = -1
+)
+
+print("Matriz de scores: ", score_cross)
+print("Precision: ", score_cross['test_precision_macro'].mean())
+print('Recall: ', score_cross['test_recall_macro'].mean())
+print("F1 Score: ", score_cross['test_f1_macro'].mean())
+print("Global Accuracy: ", score_cross['test_accuracy'].mean())
+
+
 
 # #pre teste
 # predicts = fertilityRF.predict(atributoTest)
 
 # #salvar o modelo
-# dump(fertilityTree, open('fertility_rf.pkl', 'wb'))
+#dump(fertilityTree, open('fertility_rf.pkl', 'wb'))
 # #ConfusionMatrixDisplay.from_estimator(fertilityTree, atributoTest, classeTest)
 
-# dump(fertilityRF, open('fertility_tree.pkl', 'wb'))
+
+dump(fertilityRF, open('fertility_rf.pkl', 'wb'))
 
 # plt.show()
 
