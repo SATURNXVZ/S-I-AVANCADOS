@@ -40,13 +40,9 @@ print(f"\nDistribuição após SMOTE:\n{y_bal.value_counts()}")
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X_bal)
 
-# =============================================================================
-# 2. HIPERPARAMETRIZAÇÃO - RANDOM FOREST
-# =============================================================================
 
-print("\n" + "=" * 60)
-print("HIPERPARAMETRIZAÇÃO - RANDOM FOREST")
-print("=" * 60)
+#2- HIPERPARAMETRIZAÇÃO/RANDOM FOREST
+print("HIPERPARAMETRIZACAO - RANDOM FOREST")
 
 rf_grid = {
     "n_estimators": [int(x) for x in np.linspace(10, 200, 10)],
@@ -67,15 +63,12 @@ rf_search = RandomizedSearchCV(
     random_state=42,
 )
 rf_search.fit(X_scaled, y_bal)
-print(f"Melhores parâmetros RF: {rf_search.best_params_}")
+print(f"Melhores parametros RF: {rf_search.best_params_}")
 
-# =============================================================================
-# 3. HIPERPARAMETRIZAÇÃO - SVM
-# =============================================================================
 
-print("\n" + "=" * 60)
+#3- HIPERPARAMETRIZAÇÃO - SVM
+
 print("HIPERPARAMETRIZAÇÃO - SVM")
-print("=" * 60)
 
 svm_grid = {
     "C": [0.1, 1, 10, 100],
@@ -94,15 +87,11 @@ svm_search = RandomizedSearchCV(
     random_state=42,
 )
 svm_search.fit(X_scaled, y_bal)
-print(f"Melhores parâmetros SVM: {svm_search.best_params_}")
+print(f"Melhores parametros SVM: {svm_search.best_params_}")
 
-# =============================================================================
-# 4. HIPERPARAMETRIZAÇÃO - KNN
-# =============================================================================
 
-print("\n" + "=" * 60)
-print("HIPERPARAMETRIZAÇÃO - KNN")
-print("=" * 60)
+#4- HIPERPARAMETRIZACAO - KNN
+print("HIPERPARAMETRIZACAO - KNN")
 
 knn_grid = {
     "n_neighbors": list(range(3, 21, 2)),
@@ -121,15 +110,12 @@ knn_search = RandomizedSearchCV(
     random_state=42,
 )
 knn_search.fit(X_scaled, y_bal)
-print(f"Melhores parâmetros KNN: {knn_search.best_params_}")
+print(f"Melhores parametros KNN: {knn_search.best_params_}")
 
-# =============================================================================
-# 5. TREINAMENTO FINAL COM CROSS-VALIDATION (10-fold)
-# =============================================================================
 
-print("\n" + "=" * 60)
-print("AVALIAÇÃO COM CROSS-VALIDATION (10-fold)")
-print("=" * 60)
+#5- TREINAMENTO FINAL COM CROSS-VALIDATION
+
+print("AVALIAÇÃO COM CROSS-VALIDATION")
 
 modelos = {
     "Random Forest": RandomForestClassifier(**rf_search.best_params_, random_state=42),
@@ -157,7 +143,7 @@ for nome, modelo in modelos.items():
         "Acurácia ± std": scores["test_accuracy"].std(),
     }
 
-# Exibir tabela comparativa
+#exibir tabela comparativa
 print("\n{:<20} {:>10} {:>10} {:>10} {:>10} {:>12}".format(
     "Modelo", "Acurácia", "Precisão", "Recall", "F1-Score", "Std (Acc)"
 ))
@@ -172,9 +158,8 @@ for nome, r in resultados.items():
         r["Acurácia ± std"],
     ))
 
-# =============================================================================
-# 6. GRÁFICO COMPARATIVO
-# =============================================================================
+
+#6- GRÁFICO COMPARATIVO
 
 nomes = list(resultados.keys())
 acuracias = [r["Acurácia"] for r in resultados.values()]
@@ -182,18 +167,18 @@ stds      = [r["Acurácia ± std"] for r in resultados.values()]
 cores     = ["#4C72B0", "#DD8452", "#55A868"]
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-fig.suptitle("Comparação de Classificadores – Pima Indians Diabetes", fontsize=14, fontweight="bold")
+fig.suptitle("Comparacao de Classificadores – Pima Indians Diabetes", fontsize=14, fontweight="bold")
 
-# --- Barras de acurácia ---
+#barras de acurácia
 bars = axes[0].bar(nomes, acuracias, yerr=stds, color=cores, capsize=6, edgecolor="black")
 axes[0].set_ylim(0.7, 1.0)
-axes[0].set_ylabel("Acurácia Média (CV 10-fold)")
+axes[0].set_ylabel("Acuracia Media (CV 10-fold)")
 axes[0].set_title("Acurácia com Desvio Padrão")
 for bar, val in zip(bars, acuracias):
     axes[0].text(bar.get_x() + bar.get_width() / 2, val + 0.005,
                  f"{val:.2%}", ha="center", va="bottom", fontsize=10)
 
-# --- Radar / barras de todas as métricas ---
+#radar / barras de todas as metricas
 metricas_plot = ["Acurácia", "Precisão", "Recall", "F1-Score"]
 x = np.arange(len(metricas_plot))
 width = 0.25
@@ -205,7 +190,7 @@ for i, (nome, r) in enumerate(resultados.items()):
 axes[1].set_xticks(x + width)
 axes[1].set_xticklabels(metricas_plot)
 axes[1].set_ylim(0.7, 1.0)
-axes[1].set_title("Métricas Comparativas")
+axes[1].set_title("Metricas Comparativas")
 axes[1].set_ylabel("Valor Médio")
 axes[1].legend()
 
@@ -213,31 +198,29 @@ plt.tight_layout()
 plt.savefig("comparacao_modelos.png", dpi=150)
 plt.show()
 
-# =============================================================================
-# 7. MELHOR MODELO → TREINAMENTO FINAL + SALVAR
-# =============================================================================
+
+#7- MELHOR MODELO → TREINAMENTO FINAL + SALVAR
 
 melhor_nome = max(resultados, key=lambda n: resultados[n]["F1-Score"])
 melhor_modelo = modelos[melhor_nome]
 
-print(f"\n{'=' * 60}")
+print("======================= ")
 print(f"MELHOR MODELO: {melhor_nome}")
 print(f"F1-Score médio: {resultados[melhor_nome]['F1-Score']:.2%}")
-print(f"{'=' * 60}")
 
-# Treinar no conjunto completo (sem holdout, pois já validamos via CV)
+
+#treinar no conjunto completo (sem holdout, pois já validamos via CV)
 melhor_modelo.fit(X_scaled, y_bal)
 
-# Salvar modelo e scaler
+#salvar modelo e scaler
 dump(melhor_modelo, open("diabetes_modelo.pkl", "wb"))
 dump(scaler,        open("diabetes_scaler.pkl", "wb"))
 
 print("\nModelo salvo em: diabetes_modelo.pkl")
 print("Scaler salvo em: diabetes_scaler.pkl")
 
-# =============================================================================
-# 8. EXEMPLO DE INFERÊNCIA
-# =============================================================================
+
+#8- EXEMPLO DE INFERÊNCIA
 
 print("\n--- Exemplo de inferência ---")
 nova_instancia = pd.DataFrame([[6, 148, 72, 35, 0, 33.6, 0.627, 50]], columns=X.columns)
