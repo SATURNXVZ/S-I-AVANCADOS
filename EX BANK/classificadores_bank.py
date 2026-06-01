@@ -1,7 +1,7 @@
-#TREINAMENTO E COMPARAÇÃO DE CLASSIFICADORES - PIMA INDIANS DIABETES
+
+#TREINAMENTO E COMPARAÇÃO DE CLASSIFICADORES - BANK MARKETING
 #modelos: Random Forest | SVM | KNN
-#SMOTE aplicado dentro do Pipeline para evitar data leakage
-#===============================================
+# SMOTE aplicado dentro do Pipeline para evitar data leakage
 
 import pandas as pd
 import numpy as np
@@ -11,24 +11,34 @@ from sklearn.model_selection import RandomizedSearchCV, cross_validate
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from pickle import dump
 
 
 #1- CARREGAMENTO E PRÉ-PROCESSAMENTO
-dados = pd.read_csv(r"C:\Users\VITORHENRIQUEDEMELO\Documents\S-I-AVANCADOS\EX PIMA\diabetes.csv")
 
-print("DATASET: PIMA INDIANS DIABETES")
+dados = pd.read_csv(r"C:\Users\VITORHENRIQUEDEMELO\Documents\S-I-AVANCADOS\EX BANK\bank.csv", sep=";")
+
+print("DATASET: BANK MARKETING")
 print(f"Shape: {dados.shape}")
-print(f"\nDistribuição das classes (antes do SMOTE):\n{dados['Outcome'].value_counts()}")
+print(f"\nDistribuição das classes (antes do SMOTE):\n{dados['y'].value_counts()}")
 
-X = dados.drop(columns=["Outcome"])
-y = dados["Outcome"]
+#codificar variáveis categóricas
+le = LabelEncoder()
+colunas_categoricas = dados.select_dtypes(include=["object"]).columns.tolist()
+colunas_categoricas.remove("y")
+
+for col in colunas_categoricas:
+    dados[col] = le.fit_transform(dados[col])
+
+X = dados.drop(columns=["y"])
+y = le.fit_transform(dados["y"])  # no=0, yes=1
 
 
 #2- HIPERPARAMETRIZAÇÃO - RANDOM FOREST
+
 print("\nHIPERPARAMETRIZAÇÃO - RANDOM FOREST")
 
 rf_grid = {
@@ -56,7 +66,6 @@ print(f"Melhores parâmetros RF: {rf_search.best_params_}")
 
 
 #3- HIPERPARAMETRIZAÇÃO - SVM
-
 print("\nHIPERPARAMETRIZACAO - SVM")
 
 svm_grid = {
@@ -78,10 +87,10 @@ svm_search = RandomizedSearchCV(
     verbose=1, n_jobs=-1, random_state=42,
 )
 svm_search.fit(X, y)
-print(f"Melhores parametros SVM: {svm_search.best_params_}")
+print(f"Melhores parâmetros SVM: {svm_search.best_params_}")
 
 
-#4- HIPERPARAMETRIZAÇÃO - KNN
+#4- HIPERPARAMETRIZACAO - KNN
 
 print("\nHIPERPARAMETRIZAÇÃO - KNN")
 
@@ -107,8 +116,7 @@ knn_search.fit(X, y)
 print(f"Melhores parâmetros KNN: {knn_search.best_params_}")
 
 
-#5- AVALIAÇÃO COM CROSS-VALIDATION (10-fold)
-#SMOTE e scaler aplicados dentro de cada fold, sem data leakage
+# 5- AVALIAÇÃO COM CROSS-VALIDATION
 
 print("\nAVALIAÇÃO COM CROSS-VALIDATION (10-fold)")
 
@@ -163,7 +171,7 @@ for nome, r in resultados.items():
     ))
 
 
-# 6- GRÁFICO COMPARATIVO
+#6- GRÁFICO COMPARATIVO
 
 nomes     = list(resultados.keys())
 acuracias = [r["Acurácia"] for r in resultados.values()]
@@ -171,7 +179,7 @@ stds      = [r["Acurácia ± std"] for r in resultados.values()]
 cores     = ["#4C72B0", "#DD8452", "#55A868"]
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-fig.suptitle("Comparação de Classificadores – Pima Indians Diabetes", fontsize=14, fontweight="bold")
+fig.suptitle("Comparação de Classificadores – Bank Marketing", fontsize=14, fontweight="bold")
 
 bars = axes[0].bar(nomes, acuracias, yerr=stds, color=cores, capsize=6, edgecolor="black")
 axes[0].set_ylim(0.6, 1.0)
@@ -197,7 +205,7 @@ axes[1].set_ylabel("Valor Médio")
 axes[1].legend()
 
 plt.tight_layout()
-plt.savefig("comparacao_modelos.png", dpi=150)
+plt.savefig("comparacao_modelos_bank.png", dpi=150)
 plt.show()
 
 
@@ -212,19 +220,19 @@ print(f"F1-Score médio: {resultados[melhor_nome]['F1-Score']:.2%}")
 
 melhor_pipeline.fit(X, y)
 
-#Salvar o pipeline inteiro (já inclui SMOTE + scaler + modelo)
-dump(melhor_pipeline, open("diabetes_modelo.pkl", "wb"))
-print("\nPipeline salvo em: diabetes_modelo.pkl")
+#salvar o pipeline inteiro (já inclui SMOTE + scaler + modelo)
+dump(melhor_pipeline, open("bank_modelo.pkl", "wb"))
+print("\nPipeline salvo em: bank_modelo.pkl")
 
 
 #8- EXEMPLO DE INFERÊNCIA
 
 print("\nExemplo de inferência")
-nova_instancia = pd.DataFrame([[6, 148, 72, 35, 0, 33.6, 0.627, 50]], columns=X.columns)
+nova_instancia = pd.DataFrame([X.iloc[0].values], columns=X.columns)
 
 predicao      = melhor_pipeline.predict(nova_instancia)
 probabilidade = melhor_pipeline.predict_proba(nova_instancia)
 
-print(f"Classes:        {melhor_pipeline.classes_}")
-print(f"Predição:       {predicao[0]}  ({'Diabético' if predicao[0] == 1 else 'Não diabético'})")
+print(f"Classes:        {melhor_pipeline.classes_}  (0=no, 1=yes)")
+print(f"Predição:       {predicao[0]}  ({'Assinou' if predicao[0] == 1 else 'Não assinou'})")
 print(f"Probabilidades: {probabilidade[0]}")
